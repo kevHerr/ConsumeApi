@@ -1,0 +1,93 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
+)
+
+type Response struct {
+	Tipo    string `json:"type"`
+	Format  string `json:"format"`
+	Version string `json:"version"`
+	Data    Data   `json:"data"`
+}
+
+type Data struct {
+	Champion Champion `json:"Garen"`
+}
+type Champion struct {
+	Version string   `json:"version"`
+	Id      string   `json:"id"`
+	Key     int      `json:"key"`
+	Name    string   `json:"name"`
+	Title   string   `json:"title"`
+	Blurb   string   `json:"blurb"`
+	Info    Info     `json:"info"`
+	Tags    []string `json:"tags"`
+	Partype string   `json:"partype"`
+}
+type Info struct {
+	Attack     int `json:"attack"`
+	Defense    int `json:"defense"`
+	Magic      int `json:"magic"`
+	Difficulty int `json:"difficulty"`
+}
+
+type Image struct {
+	Full   string `json:"full"`
+	Sprite string `json:"sprite"`
+	Group  string `json:"group"`
+	X      int    `json:"x"`
+	Y      int    `json:"y"`
+	W      int    `json:"w"`
+	H      int    `json:"h"`
+}
+type Stats struct {
+	Hp                   int `json:"hp"`
+	HpPerlevel           int `json:"hpperlevel"`
+	Mp                   int `json:"mp"`
+	MpPerlevel           int `json:"mpperlevel"`
+	Movespeed            int `json:"movespeed"`
+	Armor                int `json:"armor"`
+	ArmorPerlevel        int `json:"armorperlevel"`
+	SpellBlock           int `json:"spellblock"`
+	SpellBlockPerlevel   int `json:"spellblockperlevel"`
+	AttackRange          int `json:"attacktrange"`
+	HpRegen              int `json:"hpregen"`
+	HpRegenPerlevel      int `json:"hpregenperlevel"`
+	MpRegen              int `json:"mpregen"`
+	MpRegenPerlevel      int `json:"mpregenperlevel"`
+	Crit                 int `json:"crit"`
+	CritPerlevel         int `json:"critperlevel"`
+	AttackDamage         int `json:"attackdamage"`
+	AttackDamagePerlevel int `json:"attackdamageperlevel"`
+	AttackSpeedPerlevel  int `json:"attackspeedperlevel"`
+	AttackSpeed          int `json:"attackspeed"`
+}
+
+func main() {
+	response, err := http.Get("http://ddragon.leagueoflegends.com/cdn/12.17.1/data/en_US/champion.json")
+	if err != nil {
+		fmt.Print(err.Error())
+		os.Exit(1)
+	}
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+
+		log.Fatal(err)
+
+	}
+	var ObjectResponse Response
+	json.Unmarshal([]byte(responseData), &ObjectResponse)
+
+	fmt.Println(ObjectResponse.Data.Champion.Name)
+	fmt.Println(ObjectResponse.Data.Champion.Tags)
+	fmt.Println(ObjectResponse.Data.Champion.Partype)
+	
+
+}
